@@ -1,0 +1,22 @@
+on: issue_comment
+
+jobs:
+  pr_commented:
+    name: "QA Labels for PRs"
+    if: ${{ github.event.issue.pull_request }} # This job only runs for pull request comments 
+    runs-on: "ubuntu-latest" 
+    permissions: # This is required for the action to be able to add labels to the pull request
+      pull-requests: write # For adding labels, otherwise set to 'read'
+    steps:
+      - name: "PR QA Comments Labeler"
+        uses: "flybywiresim/actions-qa-labels@master" # Make sure to use the latest version available!
+        with:
+          repo-owner: "${{ github.event.repository.owner.login }}" # Do not change this - this will automatically be set to the owner of the repository
+          repo-name: "${{ github.event.repository.name }}" # Do not change this - this will automatically be set to the name of the repository
+          pr-number: "${{ github.event.issue.number }}" # Do not change this - this will automatically be set to the number of the pull request
+          github-token: "${{ secrets.GITHUB_TOKEN }}" # Do not change this - this will automatically be set to the GITHUB_TOKEN secret so that the action can add labels to the pull request - if you want to use a personal access token instead (e.g. for a bot), you can set it here
+          label-pass: "QA Passed" # The label to add if the QA report comment contains the string "QA Passed"
+          label-fail: "QA Failed" # The label to add if the QA report comment contains the string "QA Failed"
+          label-rtt: "QA Ready to Test" # The label to add if the QA report comment contains the string "QA Ready to Test"
+          # fail-action-if-no-qacomment: true # Uncomment this line if you want the action to fail if there is no QA report comment
+          # fail-action-if-qa-failed: true # [Recommended] Uncomment this line if you want the action to fail if the QA report comment contains the string "QA Failed" 
